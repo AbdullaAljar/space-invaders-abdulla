@@ -7,3 +7,24 @@ make the image svg
 make the images square (done)
 
 make score system and display score (done)
+
+invader gets faster the more of them dies (done)
+
+invader shoots lazer randomly (done)
+
+implement lives mechanic for invader lazer (done)
+
+
+
+
+the laser shoots after gameover
+
+
+timer finsihs and no gameover
+
+
+shoot and pause freezes laser even after unpausing
+
+
+laser gets dumped all at once after leaving browser and coming back
+
