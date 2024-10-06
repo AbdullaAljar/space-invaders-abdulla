@@ -1,0 +1,20 @@
+# Constraints and Guidelines
+1. No Frameworks or Libraries:
+You must not use any JavaScript frameworks or libraries like React, Vue, Angular, or jQuery. The project should be implemented using plain JavaScript (vanilla JS), HTML, and CSS only.
+2. No Canvas Element:
+You are not allowed to use the <canvas> element for rendering. All game elements and animations must be handled using the DOM (Document Object Model) and CSS.
+3. Minimal Use of Layers:
+While you can use layers, their use must be minimal to optimize rendering performance. Overusing layers can lead to performance issues.
+4. Consistent 60 FPS:
+The game must run at a consistent 60 frames per second (FPS) without frame drops. This means you need to carefully manage performance and avoid any code that could cause jank or stutter.
+5. Keyboard Controls Only:
+The game must be controlled using the keyboard only. Mouse or touch controls are not allowed. Ensure that the controls are smooth and responsive.
+6. Proper Use of requestAnimationFrame:
+You must use requestAnimationFrame for animations to ensure smooth and efficient rendering. Avoid using setInterval or setTimeout for animations as they are less efficient.
+# Summary of Requirements
+1. No frameworks or libraries: Use plain JavaScript, HTML, and CSS.
+2. No canvas: Use the DOM for rendering.
+3. Minimal layers: Optimize rendering performance.
+4. 60 FPS: Ensure smooth and consistent frame rates.
+5. Keyboard controls: Use only keyboard for game controls.
+6. Use requestAnimationFrame: For smooth animations.
