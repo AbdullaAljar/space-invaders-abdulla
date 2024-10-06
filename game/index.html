@@ -3,11 +3,61 @@
 <head>
   <meta charset='utf-8'>
   <title>Space Invaders</title>
-  <link rel='stylesheet' href='style.css'>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: black;
+      color: white;
+      text-align: center;
+    }
+
+    .grid {
+      width: 400px;
+      height: 400px;
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      grid-template-rows: repeat(20, 1fr);
+      margin: 20px auto;
+      position: relative;
+    }
+
+    .grid div {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #222;
+    }
+
+    .results {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .pause-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 50px;
+      font-weight: bold;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 10; /* Ensure it appears on top */
+      display: none; /* Initially hidden */
+    }
+
+    .laser {
+      background-color: red; /* Make the laser visible with a red color */
+    }
+  </style>
 </head>
 <body>
   <h1 class="results">0</h1>
   <div class="grid"></div>
+  <div class="pause-overlay">PAUSE</div> <!-- The pause message -->
   <script src="script.js"></script>
 </body>
 </html>

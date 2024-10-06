@@ -1,5 +1,6 @@
 const grid = document.querySelector(".grid"); // Select the grid element
 const resultDisplay = document.querySelector(".results"); // Select the results display element
+const pauseOverlay = document.querySelector(".pause-overlay"); // Select the pause overlay element
 let currentShooterIndex = 382; // Initial position of the shooter (adjusted for larger grid)
 const width = 20; // Width of the grid (adjusted for larger grid)
 const aliensRemoved = []; // Array to keep track of removed aliens
@@ -8,6 +9,8 @@ let direction = 1; // Direction of invader movement (1 for right, -1 for left)
 let results = 0; // Player's score
 let lastTime = 0; // Timestamp of the last frame
 const speed = 600; // Speed of invader movement in milliseconds
+let isPaused = false; // Flag to track if the game is paused
+let animationFrameId; // Store the requestAnimationFrame ID for pausing
 
 // Load the images
 const invaderImg = new Image();
@@ -65,6 +68,7 @@ Promise.all([
 
     // Function to move the shooter
     function moveShooter(e) {
+        if (isPaused) return; // Prevent movement if the game is paused
         squares[currentShooterIndex].style.backgroundImage = ''; // Remove shooter image from the current position
         squares[currentShooterIndex].classList.remove("shooter");
         switch (e.key) {
@@ -85,6 +89,8 @@ Promise.all([
 
     // Function to move the invaders
     function moveInvaders(timestamp) {
+        if (isPaused) return; // Stop the function if the game is paused
+
         if (!lastTime) lastTime = timestamp; // Initialize lastTime if it's the first frame
         const elapsed = timestamp - lastTime; // Calculate elapsed time since the last frame
 
@@ -128,38 +134,40 @@ Promise.all([
             lastTime = timestamp; // Update lastTime
         }
 
-        requestAnimationFrame(moveInvaders); // Request the next frame
+        animationFrameId = requestAnimationFrame(moveInvaders); // Request the next frame
     }
 
     // Start the animation
-    requestAnimationFrame(moveInvaders);
+    animationFrameId = requestAnimationFrame(moveInvaders);
 
     // Function to shoot lasers
     function shoot(e) {
+        if (isPaused) return; // Prevent shooting if the game is paused
+    
         let laserId;
         let currentLaserIndex = currentShooterIndex;
-
+    
         function moveLaser() {
             if (currentLaserIndex >= 0) { // Ensure the laser doesn't go out of bounds
                 squares[currentLaserIndex].classList.remove("laser"); // Remove laser class from the current position
             }
             currentLaserIndex -= width; // Move laser up by one row
-
+    
             if (currentLaserIndex >= 0) { // Ensure the laser doesn't go out of bounds
                 squares[currentLaserIndex].classList.add("laser"); // Add laser class to the new position
             }
-
+    
             // Check for collision with invader
             if (currentLaserIndex >= 0 && squares[currentLaserIndex].style.backgroundImage.includes('invader.png')) {
                 squares[currentLaserIndex].classList.remove("laser");
                 squares[currentLaserIndex].style.backgroundImage = '';
                 squares[currentLaserIndex].classList.add("boom");
-
+    
                 // Remove boom class immediately
                 squares[currentLaserIndex].classList.remove("boom");
-
+    
                 cancelAnimationFrame(laserId); // Stop the laser animation
-
+    
                 const alienRemoved = alienInvaders.indexOf(currentLaserIndex);
                 aliensRemoved.push(alienRemoved);
                 results++;
@@ -170,11 +178,29 @@ Promise.all([
                 laserId = requestAnimationFrame(moveLaser); // Continue moving the laser
             }
         }
-
+    
         if (e.key === "ArrowUp") {
             laserId = requestAnimationFrame(moveLaser); // Start the laser animation
         }
     }
+    
 
     document.addEventListener('keydown', shoot);
+
+    // Function to toggle pause/resume
+    function togglePause(e) {
+        if (e.key === "Escape" || e.key.toLowerCase() === "p") {
+            isPaused = !isPaused; // Toggle the paused state
+
+            if (isPaused) {
+                pauseOverlay.style.display = "block"; // Show the pause message
+                cancelAnimationFrame(animationFrameId); // Stop invader movement
+            } else {
+                pauseOverlay.style.display = "none"; // Hide the pause message
+                requestAnimationFrame(moveInvaders); // Resume invader movement
+            }
+        }
+    }
+
+    document.addEventListener("keydown", togglePause); // Listen for keydown events to pause/unpause
 });
