@@ -1,2 +1,4 @@
-pause the game
+pause the game (done)
+
+pause menu continue and restart buttons (done)
 

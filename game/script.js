@@ -1,6 +1,8 @@
 const grid = document.querySelector(".grid"); // Select the grid element
 const resultDisplay = document.querySelector(".results"); // Select the results display element
 const pauseOverlay = document.querySelector(".pause-overlay"); // Select the pause overlay element
+const continueBtn = document.getElementById("continue-btn"); // Continue button
+const restartBtn = document.getElementById("restart-btn"); // Restart button
 let currentShooterIndex = 382; // Initial position of the shooter (adjusted for larger grid)
 const width = 20; // Width of the grid (adjusted for larger grid)
 const aliensRemoved = []; // Array to keep track of removed aliens
@@ -143,31 +145,31 @@ Promise.all([
     // Function to shoot lasers
     function shoot(e) {
         if (isPaused) return; // Prevent shooting if the game is paused
-    
+
         let laserId;
         let currentLaserIndex = currentShooterIndex;
-    
+
         function moveLaser() {
             if (currentLaserIndex >= 0) { // Ensure the laser doesn't go out of bounds
                 squares[currentLaserIndex].classList.remove("laser"); // Remove laser class from the current position
             }
             currentLaserIndex -= width; // Move laser up by one row
-    
+
             if (currentLaserIndex >= 0) { // Ensure the laser doesn't go out of bounds
                 squares[currentLaserIndex].classList.add("laser"); // Add laser class to the new position
             }
-    
+
             // Check for collision with invader
             if (currentLaserIndex >= 0 && squares[currentLaserIndex].style.backgroundImage.includes('invader.png')) {
                 squares[currentLaserIndex].classList.remove("laser");
                 squares[currentLaserIndex].style.backgroundImage = '';
                 squares[currentLaserIndex].classList.add("boom");
-    
+
                 // Remove boom class immediately
                 squares[currentLaserIndex].classList.remove("boom");
-    
+
                 cancelAnimationFrame(laserId); // Stop the laser animation
-    
+
                 const alienRemoved = alienInvaders.indexOf(currentLaserIndex);
                 aliensRemoved.push(alienRemoved);
                 results++;
@@ -178,12 +180,11 @@ Promise.all([
                 laserId = requestAnimationFrame(moveLaser); // Continue moving the laser
             }
         }
-    
+
         if (e.key === "ArrowUp") {
             laserId = requestAnimationFrame(moveLaser); // Start the laser animation
         }
     }
-    
 
     document.addEventListener('keydown', shoot);
 
@@ -193,14 +194,26 @@ Promise.all([
             isPaused = !isPaused; // Toggle the paused state
 
             if (isPaused) {
-                pauseOverlay.style.display = "block"; // Show the pause message
+                pauseOverlay.style.display = "block"; // Show the pause menu
                 cancelAnimationFrame(animationFrameId); // Stop invader movement
             } else {
-                pauseOverlay.style.display = "none"; // Hide the pause message
+                pauseOverlay.style.display = "none"; // Hide the pause menu
                 requestAnimationFrame(moveInvaders); // Resume invader movement
             }
         }
     }
 
     document.addEventListener("keydown", togglePause); // Listen for keydown events to pause/unpause
+
+    // Handle the "Continue" button click
+    continueBtn.addEventListener("click", () => {
+        isPaused = false;
+        pauseOverlay.style.display = "none"; // Hide the pause menu
+        requestAnimationFrame(moveInvaders); // Resume invader movement
+    });
+
+    // Handle the "Restart" button click
+    restartBtn.addEventListener("click", () => {
+        location.reload(); // Reload the page to restart the game
+    });
 });

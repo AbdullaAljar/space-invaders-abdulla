@@ -47,6 +47,26 @@
       border-radius: 10px;
       z-index: 10; /* Ensure it appears on top */
       display: none; /* Initially hidden */
+      text-align: center;
+    }
+
+    .pause-buttons {
+      margin-top: 20px;
+    }
+
+    .pause-buttons button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .pause-buttons button:hover {
+      background-color: #666;
     }
 
     .laser {
@@ -57,7 +77,13 @@
 <body>
   <h1 class="results">0</h1>
   <div class="grid"></div>
-  <div class="pause-overlay">PAUSE</div> <!-- The pause message -->
+  <div class="pause-overlay">
+    PAUSED
+    <div class="pause-buttons">
+      <button id="continue-btn">Continue</button>
+      <button id="restart-btn">Restart</button>
+    </div>
+  </div> <!-- The pause message with buttons -->
   <script src="script.js"></script>
 </body>
 </html>
