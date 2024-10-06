@@ -1,153 +1,328 @@
-/*
-const grid = document.querySelector(".grid"); // Select the grid element
-const resultDisplay = document.querySelector(".results"); // Select the results display element
-let currentShooterIndex = 202; // Initial position of the shooter
-const width = 15; // Width of the grid
-const aliensRemoved = []; // Array to keep track of removed aliens
-let isGoingRight = true; // Flag to check if invaders are moving right
-let direction = 1; // Direction of invader movement (1 for right, -1 for left)
-let results = 0; // Player's score
-let lastTime = 0; // Timestamp of the last frame
-const speed = 600; // Speed of invader movement in milliseconds
+// const grid = document.querySelector(".grid");
+// const resultDisplay = document.querySelector(".results");
+// const pauseOverlay = document.querySelector(".pause-overlay");
+// const gameOverOverlay = document.getElementById("game-over-overlay");
+// const gameOverMessage = document.getElementById("game-over-message");
+// const continueBtn = document.getElementById("continue-btn");
+// const restartBtn = document.getElementById("restart-btn");
+// const finalRestartBtn = document.getElementById("final-restart-btn");
 
-// Create the grid squares
-for (let i = 0; i < width * width; i++) {
-    const square = document.createElement("div"); // Create a new div element
-    grid.appendChild(square); // Append the div to the grid
-}
+// let currentShooterIndex = 382; // Shooter starts at the bottom
+// const width = 20; // Width of the grid
+// let aliensRemoved = [];
+// let isGoingRight = true;
+// let direction = 1;
+// let results = 0;
+// let lastTime = 0;
+// let speed = 600; // Initial speed of aliens
+// let isPaused = false;
+// let canShoot = true; // Variable to handle 1-second cooldown for normal shooting
+// let canSpecialShoot = true; // To track cooldown of special shooting
+// let isShooting = false; // Track if "Up" arrow is held down for normal shooting
+// let specialShooting = false; // Track if "Down" arrow is held for special shooting
+// const normalShootCooldownTime = 1000; // 1-second cooldown for normal shooting
+// const specialShootCooldownTime = 5000; // 5-second cooldown for special shooting
 
-const squares = Array.from(document.querySelectorAll(".grid div")); // Convert NodeList to Array
+// // Load the images
+// const invaderImg = new Image();
+// invaderImg.src = 'images/invader.png';
 
-// Initial positions of the alien invaders
-const alienInvaders = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-    30, 31, 32, 33, 34, 35, 36, 37, 38, 39
-];
+// const shooterImg = new Image();
+// shooterImg.src = 'images/shooter.png';
 
-// Function to draw the invaders
-function draw() {
-    for (let i = 0; i < alienInvaders.length; i++) {
-        if (!aliensRemoved.includes(i)) { // Check if the invader is not removed
-            squares[alienInvaders[i]].classList.add("invader"); // Add invader class to the square
-        }
-    }
-}
+// // Function to calculate score
+// function calculateScore() {
+//     const timeTaken = (endTime - startTime) / 1000;
+//     const baseScore = 1000;
+//     const timePenalty = Math.floor(timeTaken) * 5;
+//     const finalScore = baseScore + results * 100 - timePenalty;
+//     return Math.max(finalScore, 0);
+// }
 
-draw(); // Draw the invaders
+// // Ensure images are loaded before starting the game
+// Promise.all([
+//     new Promise((resolve) => invaderImg.onload = resolve),
+//     new Promise((resolve) => shooterImg.onload = resolve)
+// ]).then(() => {
+//     createGrid();
+//     startGame();
+// });
 
-squares[currentShooterIndex].classList.add("shooter"); // Add shooter class to the initial shooter position
+// function createGrid() {
+//     for (let i = 0; i < width * width; i++) {
+//         const square = document.createElement("div");
+//         grid.appendChild(square);
+//     }
+// }
 
-// Function to remove invaders from their current positions
-function remove() {
-    for (let i = 0; i < alienInvaders.length; i++) {
-        squares[alienInvaders[i]].classList.remove("invader"); // Remove invader class from the square
-    }
-}
+// function startGame() {
+//     const squares = Array.from(document.querySelectorAll(".grid div"));
 
-// Function to move the shooter
-function moveShooter(e) {
-    squares[currentShooterIndex].classList.remove("shooter"); // Remove shooter class from the current position
-    switch (e.key) {
-        case "ArrowLeft":
-            if (currentShooterIndex % width !== 0) currentShooterIndex -= 1; // Move left if not at the edge
-            break;
-        case "ArrowRight":
-            if (currentShooterIndex % width < width - 1) currentShooterIndex += 1; // Move right if not at the edge
-            break;
-    }
-    squares[currentShooterIndex].classList.add("shooter"); // Add shooter class to the new position
-}
+//     let alienInvaders = [
+//         0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+//         20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+//         40, 41, 42, 43, 44, 45, 46, 47, 48, 49
+//     ];
 
-document.addEventListener("keydown", moveShooter); // Listen for keydown events to move the shooter
+//     // Draw invaders
+//     function draw() {
+//         for (let i = 0; i < alienInvaders.length; i++) {
+//             if (!aliensRemoved.includes(i)) {
+//                 squares[alienInvaders[i]].style.backgroundImage = `url(${invaderImg.src})`;
+//                 squares[alienInvaders[i]].style.backgroundSize = 'cover';
+//                 squares[alienInvaders[i]].style.backgroundRepeat = 'no-repeat';
+//                 squares[alienInvaders[i]].classList.add("invader");
+//             }
+//         }
+//     }
 
-// Function to move the invaders
-function moveInvaders(timestamp) {
-    if (!lastTime) lastTime = timestamp; // Initialize lastTime if it's the first frame
-    const elapsed = timestamp - lastTime; // Calculate elapsed time since the last frame
+//     // Remove invaders
+//     function remove() {
+//         for (let i = 0; i < alienInvaders.length; i++) {
+//             squares[alienInvaders[i]].style.backgroundImage = '';
+//             squares[alienInvaders[i]].classList.remove("invader");
+//         }
+//     }
 
-    if (elapsed > speed) { // Check if the elapsed time is greater than the speed
-        const leftEdge = alienInvaders[0] % width === 0; // Check if the leftmost invader is at the left edge
-        const rightEdge = alienInvaders[alienInvaders.length - 1] % width === width - 1; // Check if the rightmost invader is at the right edge
-        remove(); // Remove invaders from their current positions
+//     // Add shooter to the grid
+//     function drawShooter() {
+//         squares[currentShooterIndex].style.backgroundImage = `url(${shooterImg.src})`;
+//         squares[currentShooterIndex].style.backgroundSize = 'cover';
+//         squares[currentShooterIndex].style.backgroundRepeat = 'no-repeat';
+//         squares[currentShooterIndex].classList.add("shooter");
+//     }
 
-        if (rightEdge && isGoingRight) {
-            for (let i = 0; i < alienInvaders.length; i++) {
-                alienInvaders[i] += width; // Move down
-            }
-            direction = -1; // Change direction to left
-            isGoingRight = false; // Update flag
-        }
+//     // Remove shooter from current position
+//     function removeShooter() {
+//         squares[currentShooterIndex].style.backgroundImage = '';
+//         squares[currentShooterIndex].classList.remove("shooter");
+//     }
 
-        if (leftEdge && !isGoingRight) {
-            for (let i = 0; i < alienInvaders.length; i++) {
-                alienInvaders[i] += width; // Move down
-            }
-            direction = 1; // Change direction to right
-            isGoingRight = true; // Update flag
-        }
+//     // Move shooter left and right with restricted movement range (middle 60% of the grid)
+//     function moveShooter(e) {
+//         removeShooter();
 
-        for (let i = 0; i < alienInvaders.length; i++) {
-            alienInvaders[i] += direction; // Move invaders in the current direction
-        }
+//         switch (e.key) {
+//             case 'ArrowLeft':
+//                 if (currentShooterIndex % width !== Math.floor(width * 0.2)) currentShooterIndex -= 1; // Restrict to left 20% of the grid
+//                 break;
+//             case 'ArrowRight':
+//                 if (currentShooterIndex % width < Math.ceil(width * 0.8) - 1) currentShooterIndex += 1; // Restrict to right 20% of the grid
+//                 break;
+//         }
 
-        draw(); // Draw invaders in new positions
+//         drawShooter();
+//     }
 
-        if (squares[currentShooterIndex].classList.contains("invader")) {
-            resultDisplay.innerHTML = "GAME OVER"; // Display game over message
-            return; // Stop the animation
-        }
+//     document.addEventListener('keydown', moveShooter);
+//     drawShooter(); // Initial draw of the shooter
 
-        if (aliensRemoved.length === alienInvaders.length) {
-            resultDisplay.innerHTML = "YOU WIN"; // Display win message
-            return; // Stop the animation
-        }
+//     // Move invaders
+//     function moveInvaders(timestamp) {
+//         if (isPaused) return;
 
-        lastTime = timestamp; // Update lastTime
-    }
+//         if (!lastTime) lastTime = timestamp;
+//         const elapsed = timestamp - lastTime;
 
-    requestAnimationFrame(moveInvaders); // Request the next frame
-}
+//         // Adjust invader speed dynamically based on number of aliens removed
+//         let invaderSpeed = Math.max(speed - (aliensRemoved.length * 50), 200);
 
-// Start the animation
-requestAnimationFrame(moveInvaders);
+//         if (elapsed > invaderSpeed) {
+//             const leftEdge = alienInvaders[0] % width === 0;
+//             const rightEdge = alienInvaders[alienInvaders.length - 1] % width === width - 1;
+//             remove();
 
-// Function to shoot lasers
-function shoot(e) {
-    let laserId;
-    let currentLaserIndex = currentShooterIndex;
+//             if (rightEdge && isGoingRight) {
+//                 for (let i = 0; i < alienInvaders.length; i++) {
+//                     alienInvaders[i] += width;
+//                 }
+//                 direction = -1;
+//                 isGoingRight = false;
+//             }
 
-    function moveLaser() {
-        squares[currentLaserIndex].classList.remove("laser"); // Remove laser class from the current position
-        currentLaserIndex -= width; // Move laser up by one row
-        if (currentLaserIndex >= 0) { // Ensure the laser doesn't go out of bounds
-            squares[currentLaserIndex].classList.add("laser"); // Add laser class to the new position
-        }
+//             if (leftEdge && !isGoingRight) {
+//                 for (let i = 0; i < alienInvaders.length; i++) {
+//                     alienInvaders[i] += width;
+//                 }
+//                 direction = 1;
+//                 isGoingRight = true;
+//             }
 
-        // Check for collision with invader
-        if (squares[currentLaserIndex].classList.contains("invader")) {
-            squares[currentLaserIndex].classList.remove("laser");
-            squares[currentLaserIndex].classList.remove("invader");
-            squares[currentLaserIndex].classList.add("boom");
+//             for (let i = 0; i < alienInvaders.length; i++) {
+//                 alienInvaders[i] += direction;
+//             }
 
-            setTimeout(() => squares[currentLaserIndex].classList.remove("boom"), 300); // Timed explosion effect
-            cancelAnimationFrame(laserId); // Stop the laser animation
+//             draw();
 
-            const alienRemoved = alienInvaders.indexOf(currentLaserIndex);
-            aliensRemoved.push(alienRemoved);
-            results++;
-            resultDisplay.innerHTML = results;
-        } else if (currentLaserIndex < 0) { // Stop the laser if it goes out of bounds
-            cancelAnimationFrame(laserId);
-        } else {
-            laserId = requestAnimationFrame(moveLaser); // Continue moving the laser
-        }
-    }
+//             // Check if invaders reach the shooter
+//             if (squares[currentShooterIndex].style.backgroundImage.includes('invader.png')) {
+//                 endTime = new Date().getTime();
+//                 gameOver('GAME OVER', false);
+//                 return;
+//             }
 
-    if (e.key === "ArrowUp") {
-        laserId = requestAnimationFrame(moveLaser); // Start the laser animation
-    }
-}
+//             // Check if all aliens are destroyed
+//             if (aliensRemoved.length === alienInvaders.length) {
+//                 endTime = new Date().getTime();
+//                 const finalScore = calculateScore();
+//                 gameOver(`YOU WIN! Final Score: ${finalScore}`, true);
+//                 return;
+//             }
 
-document.addEventListener('keydown', shoot);
-*/
+//             lastTime = timestamp;
+//         }
+
+//         animationFrameId = requestAnimationFrame(moveInvaders);
+//     }
+
+//     // Regular shooting (Up arrow) with 1-second cooldown
+//     function shoot() {
+//         if (!canShoot) return; // Prevent shooting if in cooldown
+
+//         let laserId;
+//         let currentLaserIndex = currentShooterIndex;
+
+//         canShoot = false; // Start 1-second cooldown
+//         setTimeout(() => canShoot = true, normalShootCooldownTime); // Reset cooldown after 1 second
+
+//         function moveLaser() {
+//             squares[currentLaserIndex].classList.remove("laser");
+//             currentLaserIndex -= width;
+
+//             if (currentLaserIndex >= 0) {
+//                 squares[currentLaserIndex].classList.add("laser");
+
+//                 // Check for collision with alien
+//                 if (squares[currentLaserIndex].style.backgroundImage.includes('invader.png')) {
+//                     let alienIndex = alienInvaders.indexOf(currentLaserIndex);
+//                     aliensRemoved.push(alienIndex);
+//                     squares[currentLaserIndex].style.backgroundImage = '';
+//                     squares[currentLaserIndex].classList.remove("laser");
+
+//                     cancelAnimationFrame(laserId);
+//                 } else if (currentLaserIndex < 0) {
+//                     cancelAnimationFrame(laserId);
+//                 } else {
+//                     laserId = requestAnimationFrame(moveLaser);
+//                 }
+//             }
+//         }
+
+//         laserId = requestAnimationFrame(moveLaser);
+//     }
+
+//     // Special shooting (Down arrow) with 3 shots and 5-second cooldown
+// // Special shooting (Down arrow) with 3 shots fired closely together and 5-second cooldown
+// function specialShoot() {
+//     if (!canSpecialShoot) return; // Prevent special shooting if in cooldown
+
+//     canSpecialShoot = false; // Start 5-second cooldown after special shoot
+//     setTimeout(() => canSpecialShoot = true, specialShootCooldownTime);
+
+//     let shots = 3; // Number of consecutive shots
+
+//     function fireSpecialShot() {
+//         if (shots === 0) return; // Stop after 3 shots
+
+//         let laserId;
+//         let currentLaserIndex = currentShooterIndex;
+
+//         function moveLaser() {
+//             squares[currentLaserIndex].classList.remove("laser");
+//             currentLaserIndex -= width;
+
+//             if (currentLaserIndex >= 0) {
+//                 squares[currentLaserIndex].classList.add("laser");
+
+//                 // Check for collision with alien
+//                 if (squares[currentLaserIndex].style.backgroundImage.includes('invader.png')) {
+//                     let alienIndex = alienInvaders.indexOf(currentLaserIndex);
+//                     aliensRemoved.push(alienIndex);
+//                     squares[currentLaserIndex].style.backgroundImage = '';
+//                     squares[currentLaserIndex].classList.remove("laser");
+
+//                     cancelAnimationFrame(laserId);
+//                 } else if (currentLaserIndex < 0) {
+//                     cancelAnimationFrame(laserId);
+//                 } else {
+//                     laserId = requestAnimationFrame(moveLaser);
+//                 }
+//             }
+//         }
+
+//         shots--;
+//         laserId = requestAnimationFrame(moveLaser);
+
+//         // Fire next shot with almost no delay to simulate one heavy shot
+//         setTimeout(fireSpecialShot, 50); // Delay between each shot set to 50ms
+//     }
+
+//     fireSpecialShot(); // Start the first special shot
+// }
+
+
+//     // Event listeners for continuous shooting and special shooting
+//     document.addEventListener('keydown', (e) => {
+//         if (e.key === "ArrowUp" && !isShooting) {
+//             isShooting = true;
+//             shoot();
+//         }
+
+//         if (e.key === "ArrowDown" && !specialShooting && canSpecialShoot) {
+//             specialShooting = true;
+//             specialShoot();
+//         }
+//     });
+
+//     document.addEventListener('keyup', (e) => {
+//         if (e.key === "ArrowUp") {
+//             isShooting = false;
+//         }
+
+//         if (e.key === "ArrowDown") {
+//             specialShooting = false;
+//         }
+//     });
+
+//     // Start the game timer
+//     startTime = new Date().getTime();
+
+//     // Start the animation for moving invaders
+//     animationFrameId = requestAnimationFrame(moveInvaders);
+
+//     function gameOver(message, isWin) {
+//         gameOverMessage.innerHTML = message;
+//         gameOverOverlay.style.display = "block";
+//     }
+
+//     // Pause/Resume functionality
+//     function togglePause(e) {
+//         if (e.key === "Escape" || e.key.toLowerCase() === "p") {
+//             isPaused = !isPaused;
+
+//             if (isPaused) {
+//                 pauseOverlay.style.display = "block";
+//                 cancelAnimationFrame(animationFrameId);
+//             } else {
+//                 pauseOverlay.style.display = "none";
+//                 requestAnimationFrame(moveInvaders);
+//             }
+//         }
+//     }
+
+//     document.addEventListener("keydown", togglePause);
+
+//     continueBtn.addEventListener("click", () => {
+//         isPaused = false;
+//         pauseOverlay.style.display = "none";
+//         requestAnimationFrame(moveInvaders);
+//     });
+
+//     restartBtn.addEventListener("click", () => {
+//         location.reload();
+//     });
+
+//     finalRestartBtn.addEventListener("click", () => {
+//         location.reload();
+//     });
+// }

@@ -2,3 +2,8 @@ pause the game (done)
 
 pause menu continue and restart buttons (done)
 
+make the image svg
+
+make the images square (done)
+
+make score system and display score (done)

@@ -34,6 +34,11 @@
       margin-bottom: 10px;
     }
 
+    .lives {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
     .pause-overlay {
       position: absolute;
       top: 50%;
@@ -72,6 +77,10 @@
     .laser {
       background-color: red; /* Make the laser visible with a red color */
     }
+
+    .invader-laser {
+      background-color: yellow; /* Invader's laser */
+    }
   </style>
 </head>
 <body>
@@ -84,6 +93,12 @@
       <button id="restart-btn">Restart</button>
     </div>
   </div> <!-- The pause message with buttons -->
+  <div id="game-over-overlay" class="pause-overlay" style="display: none;">
+    <div id="game-over-message"></div>
+    <div class="pause-buttons">
+      <button id="final-restart-btn">Restart</button>
+    </div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
