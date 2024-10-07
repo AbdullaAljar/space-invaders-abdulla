@@ -1,5 +1,7 @@
 // const grid = document.querySelector(".grid");
 // const resultDisplay = document.querySelector(".results");
+// const livesDisplay = document.createElement("div");
+// const countdownDisplay = document.querySelector('.countdown');
 // const pauseOverlay = document.querySelector(".pause-overlay");
 // const gameOverOverlay = document.getElementById("game-over-overlay");
 // const gameOverMessage = document.getElementById("game-over-message");
@@ -7,21 +9,35 @@
 // const restartBtn = document.getElementById("restart-btn");
 // const finalRestartBtn = document.getElementById("final-restart-btn");
 
-// let currentShooterIndex = 382; // Shooter starts at the bottom
-// const width = 20; // Width of the grid
+// let currentShooterIndex = 382;
+// const width = 20;
+// let alienInvaders = []; // Declared globally to avoid scope issues
 // let aliensRemoved = [];
 // let isGoingRight = true;
 // let direction = 1;
 // let results = 0;
-// let lastTime = 0;
-// let speed = 600; // Initial speed of aliens
+// let speed = 600;
 // let isPaused = false;
-// let canShoot = true; // Variable to handle 1-second cooldown for normal shooting
-// let canSpecialShoot = true; // To track cooldown of special shooting
-// let isShooting = false; // Track if "Up" arrow is held down for normal shooting
-// let specialShooting = false; // Track if "Down" arrow is held for special shooting
-// const normalShootCooldownTime = 1000; // 1-second cooldown for normal shooting
+// let playerLives = 3;
+// let score = 0;
+// let startTime = new Date().getTime();
+// let totalTime = 45;
+// let remainingTime = totalTime;
+// let countdownInterval;
+// let invaderLaserIntervals = [];
+// let canShoot = true;
+// let canSpecialShoot = true;
+// let isShooting = false;
+// let specialShooting = false;
+// let animationFrameId;
+// const normalShootCooldownTime = 1000;
 // const specialShootCooldownTime = 5000; // 5-second cooldown for special shooting
+// const targetFPS = 60;
+// const frameDuration = 1000 / targetFPS;
+// let lastTimestamp = 0;
+// let lastMoveTime = 0;
+// let invaderMoveInterval = 500;
+// const minMoveInterval = 100;
 
 // // Load the images
 // const invaderImg = new Image();
@@ -30,16 +46,34 @@
 // const shooterImg = new Image();
 // shooterImg.src = 'images/shooter.png';
 
-// // Function to calculate score
-// function calculateScore() {
-//     const timeTaken = (endTime - startTime) / 1000;
-//     const baseScore = 1000;
-//     const timePenalty = Math.floor(timeTaken) * 5;
-//     const finalScore = baseScore + results * 100 - timePenalty;
-//     return Math.max(finalScore, 0);
+// // Function to calculate score in real-time
+// function updateScore() {
+//     const currentTime = new Date().getTime();
+//     const timeElapsed = (currentTime - startTime) / 1000;
+//     const timePenalty = Math.floor(timeElapsed * 5);
+//     const points = 100 - timePenalty;
+//     score += Math.max(points, 10);
+//     resultDisplay.innerHTML = `Score: ${score}`;
 // }
 
-// // Ensure images are loaded before starting the game
+// // Function to update the displayed lives
+// function updateLivesDisplay() {
+//     livesDisplay.innerHTML = `Lives: ${playerLives}`;
+//     livesDisplay.classList.add('lives');
+//     document.body.insertBefore(livesDisplay, document.body.firstChild);
+// }
+
+// // Function to update the countdown timer
+// function updateCountdown() {
+//     if (remainingTime > 0 && !isPaused) {
+//         remainingTime--;
+//         countdownDisplay.innerHTML = `Time Left: ${remainingTime}s`;
+//     } else if (remainingTime <= 0) {
+//         clearInterval(countdownInterval);
+//         gameOver('TIME UP! Game Over', false);
+//     }
+// }
+
 // Promise.all([
 //     new Promise((resolve) => invaderImg.onload = resolve),
 //     new Promise((resolve) => shooterImg.onload = resolve)
@@ -58,13 +92,16 @@
 // function startGame() {
 //     const squares = Array.from(document.querySelectorAll(".grid div"));
 
-//     let alienInvaders = [
+//     // Initialize alien invaders globally
+//     alienInvaders = [
 //         0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
 //         20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
 //         40, 41, 42, 43, 44, 45, 46, 47, 48, 49
 //     ];
 
-//     // Draw invaders
+//     updateLivesDisplay();
+//     countdownInterval = setInterval(updateCountdown, 1000);
+
 //     function draw() {
 //         for (let i = 0; i < alienInvaders.length; i++) {
 //             if (!aliensRemoved.includes(i)) {
@@ -76,7 +113,6 @@
 //         }
 //     }
 
-//     // Remove invaders
 //     function remove() {
 //         for (let i = 0; i < alienInvaders.length; i++) {
 //             squares[alienInvaders[i]].style.backgroundImage = '';
@@ -84,7 +120,6 @@
 //         }
 //     }
 
-//     // Add shooter to the grid
 //     function drawShooter() {
 //         squares[currentShooterIndex].style.backgroundImage = `url(${shooterImg.src})`;
 //         squares[currentShooterIndex].style.backgroundSize = 'cover';
@@ -92,115 +127,117 @@
 //         squares[currentShooterIndex].classList.add("shooter");
 //     }
 
-//     // Remove shooter from current position
 //     function removeShooter() {
 //         squares[currentShooterIndex].style.backgroundImage = '';
 //         squares[currentShooterIndex].classList.remove("shooter");
 //     }
 
-//     // Move shooter left and right with restricted movement range (middle 60% of the grid)
 //     function moveShooter(e) {
-//         removeShooter();
+//         if (isPaused) return;
 
+//         removeShooter();
 //         switch (e.key) {
 //             case 'ArrowLeft':
-//                 if (currentShooterIndex % width !== Math.floor(width * 0.2)) currentShooterIndex -= 1; // Restrict to left 20% of the grid
+//                 if (currentShooterIndex % width !== 0) currentShooterIndex -= 1;
 //                 break;
 //             case 'ArrowRight':
-//                 if (currentShooterIndex % width < Math.ceil(width * 0.8) - 1) currentShooterIndex += 1; // Restrict to right 20% of the grid
+//                 if (currentShooterIndex % width < width - 1) currentShooterIndex += 1;
 //                 break;
 //         }
-
 //         drawShooter();
 //     }
 
 //     document.addEventListener('keydown', moveShooter);
-//     drawShooter(); // Initial draw of the shooter
+//     drawShooter();
 
-//     // Move invaders
 //     function moveInvaders(timestamp) {
 //         if (isPaused) return;
 
-//         if (!lastTime) lastTime = timestamp;
-//         const elapsed = timestamp - lastTime;
+//         const elapsed = timestamp - lastTimestamp;
 
-//         // Adjust invader speed dynamically based on number of aliens removed
-//         let invaderSpeed = Math.max(speed - (aliensRemoved.length * 50), 200);
+//         if (elapsed > frameDuration) {
+//             const timeSinceLastMove = timestamp - lastMoveTime;
+//             if (timeSinceLastMove > invaderMoveInterval) {
+//                 const leftEdge = alienInvaders[0] % width === 0;
+//                 const rightEdge = alienInvaders[alienInvaders.length - 1] % width === width - 1;
+//                 remove();
 
-//         if (elapsed > invaderSpeed) {
-//             const leftEdge = alienInvaders[0] % width === 0;
-//             const rightEdge = alienInvaders[alienInvaders.length - 1] % width === width - 1;
-//             remove();
-
-//             if (rightEdge && isGoingRight) {
-//                 for (let i = 0; i < alienInvaders.length; i++) {
-//                     alienInvaders[i] += width;
+//                 if (rightEdge && isGoingRight) {
+//                     for (let i = 0; i < alienInvaders.length; i++) {
+//                         alienInvaders[i] += width;
+//                     }
+//                     direction = -1;
+//                     isGoingRight = false;
 //                 }
-//                 direction = -1;
-//                 isGoingRight = false;
-//             }
 
-//             if (leftEdge && !isGoingRight) {
-//                 for (let i = 0; i < alienInvaders.length; i++) {
-//                     alienInvaders[i] += width;
+//                 if (leftEdge && !isGoingRight) {
+//                     for (let i = 0; i < alienInvaders.length; i++) {
+//                         alienInvaders[i] += width;
+//                     }
+//                     direction = 1;
+//                     isGoingRight = true;
 //                 }
-//                 direction = 1;
-//                 isGoingRight = true;
+
+//                 for (let i = 0; i < alienInvaders.length; i++) {
+//                     alienInvaders[i] += direction;
+//                 }
+
+//                 draw();
+
+//                 if (alienInvaders.some(invader => invader >= (width * (width - 1)))) {
+//                     gameOver('GAME OVER - Invaders reached the shooter\'s row', false);
+//                     return;
+//                 }
+
+//                 if (squares[currentShooterIndex].style.backgroundImage.includes('invader.png')) {
+//                     gameOver('GAME OVER', false);
+//                     return;
+//                 }
+
+//                 if (aliensRemoved.length === alienInvaders.length) {
+//                     gameOver('YOU WIN!', true);
+//                     return;
+//                 }
+
+//                 lastMoveTime = timestamp;
 //             }
 
-//             for (let i = 0; i < alienInvaders.length; i++) {
-//                 alienInvaders[i] += direction;
-//             }
-
-//             draw();
-
-//             // Check if invaders reach the shooter
-//             if (squares[currentShooterIndex].style.backgroundImage.includes('invader.png')) {
-//                 endTime = new Date().getTime();
-//                 gameOver('GAME OVER', false);
-//                 return;
-//             }
-
-//             // Check if all aliens are destroyed
-//             if (aliensRemoved.length === alienInvaders.length) {
-//                 endTime = new Date().getTime();
-//                 const finalScore = calculateScore();
-//                 gameOver(`YOU WIN! Final Score: ${finalScore}`, true);
-//                 return;
-//             }
-
-//             lastTime = timestamp;
+//             lastTimestamp = timestamp;
 //         }
 
 //         animationFrameId = requestAnimationFrame(moveInvaders);
 //     }
 
-//     // Regular shooting (Up arrow) with 1-second cooldown
 //     function shoot() {
-//         if (!canShoot) return; // Prevent shooting if in cooldown
+//         if (!canShoot) return;
 
 //         let laserId;
 //         let currentLaserIndex = currentShooterIndex;
 
-//         canShoot = false; // Start 1-second cooldown
-//         setTimeout(() => canShoot = true, normalShootCooldownTime); // Reset cooldown after 1 second
+//         canShoot = false;
+//         setTimeout(() => canShoot = true, normalShootCooldownTime);
 
 //         function moveLaser() {
+//             if (isPaused) return;
+
 //             squares[currentLaserIndex].classList.remove("laser");
 //             currentLaserIndex -= width;
 
 //             if (currentLaserIndex >= 0) {
 //                 squares[currentLaserIndex].classList.add("laser");
 
-//                 // Check for collision with alien
 //                 if (squares[currentLaserIndex].style.backgroundImage.includes('invader.png')) {
 //                     let alienIndex = alienInvaders.indexOf(currentLaserIndex);
 //                     aliensRemoved.push(alienIndex);
 //                     squares[currentLaserIndex].style.backgroundImage = '';
 //                     squares[currentLaserIndex].classList.remove("laser");
 
-//                     cancelAnimationFrame(laserId);
-//                 } else if (currentLaserIndex < 0) {
+//                     updateScore();
+
+//                     if (invaderMoveInterval > minMoveInterval) {
+//                         invaderMoveInterval -= 20;
+//                     }
+
 //                     cancelAnimationFrame(laserId);
 //                 } else {
 //                     laserId = requestAnimationFrame(moveLaser);
@@ -212,56 +249,71 @@
 //     }
 
 //     // Special shooting (Down arrow) with 3 shots and 5-second cooldown
-// // Special shooting (Down arrow) with 3 shots fired closely together and 5-second cooldown
-// function specialShoot() {
-//     if (!canSpecialShoot) return; // Prevent special shooting if in cooldown
+//     function specialShoot() {
+//         if (!canSpecialShoot) return;
 
-//     canSpecialShoot = false; // Start 5-second cooldown after special shoot
-//     setTimeout(() => canSpecialShoot = true, specialShootCooldownTime);
+//         canSpecialShoot = false;
+//         setTimeout(() => canSpecialShoot = true, specialShootCooldownTime);
 
-//     let shots = 3; // Number of consecutive shots
+//         let shots = 3; // Number of consecutive shots
 
-//     function fireSpecialShot() {
-//         if (shots === 0) return; // Stop after 3 shots
+//         function fireSpecialShot() {
+//             if (shots === 0) return;
 
-//         let laserId;
-//         let currentLaserIndex = currentShooterIndex;
+//             let laserId;
+//             let currentLaserIndex = currentShooterIndex;
 
-//         function moveLaser() {
-//             squares[currentLaserIndex].classList.remove("laser");
-//             currentLaserIndex -= width;
+//             function moveLaser() {
+//                 if (isPaused) return;
 
-//             if (currentLaserIndex >= 0) {
-//                 squares[currentLaserIndex].classList.add("laser");
+//                 squares[currentLaserIndex].classList.remove("laser");
+//                 currentLaserIndex -= width;
 
-//                 // Check for collision with alien
-//                 if (squares[currentLaserIndex].style.backgroundImage.includes('invader.png')) {
-//                     let alienIndex = alienInvaders.indexOf(currentLaserIndex);
-//                     aliensRemoved.push(alienIndex);
-//                     squares[currentLaserIndex].style.backgroundImage = '';
-//                     squares[currentLaserIndex].classList.remove("laser");
+//                 if (currentLaserIndex >= 0) {
+//                     squares[currentLaserIndex].classList.add("laser");
 
-//                     cancelAnimationFrame(laserId);
-//                 } else if (currentLaserIndex < 0) {
-//                     cancelAnimationFrame(laserId);
-//                 } else {
-//                     laserId = requestAnimationFrame(moveLaser);
+//                     if (squares[currentLaserIndex].style.backgroundImage.includes('invader.png')) {
+//                         let alienIndex = alienInvaders.indexOf(currentLaserIndex);
+//                         aliensRemoved.push(alienIndex);
+//                         squares[currentLaserIndex].style.backgroundImage = '';
+//                         squares[currentLaserIndex].classList.remove("laser");
+
+//                         updateScore();
+
+//                         cancelAnimationFrame(laserId);
+//                     } else {
+//                         laserId = requestAnimationFrame(moveLaser);
+//                     }
 //                 }
 //             }
+
+//             shots--;
+//             laserId = requestAnimationFrame(moveLaser);
+
+//             setTimeout(fireSpecialShot, 50);
 //         }
 
-//         shots--;
-//         laserId = requestAnimationFrame(moveLaser);
-
-//         // Fire next shot with almost no delay to simulate one heavy shot
-//         setTimeout(fireSpecialShot, 50); // Delay between each shot set to 50ms
+//         fireSpecialShot();
 //     }
 
-//     fireSpecialShot(); // Start the first special shot
-// }
+//     function togglePause(e) {
+//         if (e.key === "Escape" || e.key.toLowerCase() === "p") {
+//             isPaused = !isPaused;
 
+//             if (isPaused) {
+//                 pauseOverlay.style.display = "block";
+//                 cancelAnimationFrame(animationFrameId);
+//                 clearInterval(countdownInterval);
+//                 invaderLaserIntervals.forEach(interval => clearInterval(interval));
+//             } else {
+//                 pauseOverlay.style.display = "none";
+//                 countdownInterval = setInterval(updateCountdown, 1000);
+//                 requestAnimationFrame(moveInvaders);
+//                 startInvaderShooting();
+//             }
+//         }
+//     }
 
-//     // Event listeners for continuous shooting and special shooting
 //     document.addEventListener('keydown', (e) => {
 //         if (e.key === "ArrowUp" && !isShooting) {
 //             isShooting = true;
@@ -271,6 +323,10 @@
 //         if (e.key === "ArrowDown" && !specialShooting && canSpecialShoot) {
 //             specialShooting = true;
 //             specialShoot();
+//         }
+
+//         if (e.key === "Escape" || e.key.toLowerCase() === "p") {
+//             togglePause(e);
 //         }
 //     });
 
@@ -284,45 +340,88 @@
 //         }
 //     });
 
-//     // Start the game timer
 //     startTime = new Date().getTime();
-
-//     // Start the animation for moving invaders
 //     animationFrameId = requestAnimationFrame(moveInvaders);
+//     startInvaderShooting();
+// }
 
-//     function gameOver(message, isWin) {
-//         gameOverMessage.innerHTML = message;
-//         gameOverOverlay.style.display = "block";
-//     }
+// // Function to handle game over
+// function gameOver(message, isWin) {
+//     gameOverMessage.innerHTML = message;
+//     gameOverOverlay.style.display = "block";
+//     clearInterval(countdownInterval);
+//     cancelAnimationFrame(animationFrameId);
+//     invaderLaserIntervals.forEach(interval => clearInterval(interval));
+//     document.removeEventListener('keydown', moveShooter);
+//     document.removeEventListener('keydown', shoot);
+//     document.removeEventListener('keydown', specialShoot);
+// }
 
-//     // Pause/Resume functionality
-//     function togglePause(e) {
-//         if (e.key === "Escape" || e.key.toLowerCase() === "p") {
-//             isPaused = !isPaused;
+// // Function to start invader shooting with random intervals
+// function startInvaderShooting() {
+//     invaderLaserIntervals.push(setInterval(() => {
+//         invaderShoot();
+//     }, 1000 + Math.random() * 2000)); // Randomized shooting intervals
+// }
 
-//             if (isPaused) {
-//                 pauseOverlay.style.display = "block";
-//                 cancelAnimationFrame(animationFrameId);
+// // Function to handle invader shooting
+// function invaderShoot() {
+//     const squares = Array.from(document.querySelectorAll(".grid div"));
+
+//     let randomInvaderIndex = alienInvaders[Math.floor(Math.random() * alienInvaders.length)];
+
+//     // Ensure the invader is not removed before it shoots
+//     if (!aliensRemoved.includes(alienInvaders.indexOf(randomInvaderIndex))) {
+//         let laserId;
+//         let currentLaserIndex = randomInvaderIndex;
+
+//         function moveLaserDown() {
+//             if (isPaused) return;
+
+//             squares[currentLaserIndex].classList.remove("invader-laser");
+//             currentLaserIndex += width; // Move the laser one row down
+
+//             if (currentLaserIndex < width * width) {
+//                 squares[currentLaserIndex].classList.add("invader-laser");
+
+//                 // Check if the laser hits the shooter
+//                 if (currentLaserIndex === currentShooterIndex) {
+//                     squares[currentLaserIndex].classList.remove("invader-laser");
+//                     playerLives--;
+//                     updateLivesDisplay();
+
+//                     // End the game if lives are exhausted
+//                     if (playerLives === 0) {
+//                         gameOver('GAME OVER - You were hit 3 times!', false);
+//                     }
+
+//                     cancelAnimationFrame(laserId);
+//                 } else {
+//                     laserId = requestAnimationFrame(moveLaserDown);
+//                 }
 //             } else {
-//                 pauseOverlay.style.display = "none";
-//                 requestAnimationFrame(moveInvaders);
+//                 // Remove the laser when it goes out of bounds
+//                 squares[currentLaserIndex].classList.remove("invader-laser");
+//                 cancelAnimationFrame(laserId);
 //             }
 //         }
+
+//         laserId = requestAnimationFrame(moveLaserDown);
 //     }
-
-//     document.addEventListener("keydown", togglePause);
-
-//     continueBtn.addEventListener("click", () => {
-//         isPaused = false;
-//         pauseOverlay.style.display = "none";
-//         requestAnimationFrame(moveInvaders);
-//     });
-
-//     restartBtn.addEventListener("click", () => {
-//         location.reload();
-//     });
-
-//     finalRestartBtn.addEventListener("click", () => {
-//         location.reload();
-//     });
 // }
+
+// continueBtn.addEventListener("click", () => {
+//     isPaused = false;
+//     pauseOverlay.style.display = "none";
+//     requestAnimationFrame(moveInvaders);
+//     countdownInterval = setInterval(updateCountdown, 1000);
+//     startInvaderShooting();
+// });
+
+// restartBtn.addEventListener("click", () => {
+//     location.reload();
+// });
+
+// finalRestartBtn.addEventListener("click", () => {
+//     location.reload();
+// });

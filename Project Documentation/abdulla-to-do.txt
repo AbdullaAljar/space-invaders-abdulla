@@ -26,11 +26,16 @@ speed after getting hit is now gone (done)
 
 timer finsihs and no gameover (done)
 
+the laser shoots after gameover (done)
 
 
-the laser shoots after gameover
+
+laser doesnt work (DONE)
 
 shoot and pause freezes laser even after unpausing
 
 laser gets dumped all at once after leaving browser and coming back
 
+controls displayed (maybe different layer)
+
+add layers

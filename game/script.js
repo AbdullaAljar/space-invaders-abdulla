@@ -11,6 +11,7 @@ const finalRestartBtn = document.getElementById("final-restart-btn");
 
 let currentShooterIndex = 382;
 const width = 20;
+let alienInvaders = []; // Declared globally to avoid scope issues
 let aliensRemoved = [];
 let isGoingRight = true;
 let direction = 1;
@@ -25,7 +26,7 @@ let remainingTime = totalTime;
 let countdownInterval;
 let invaderLaserIntervals = [];
 let canShoot = true;
-let canSpecialShoot = true; // Re-enable special shooting cooldown
+let canSpecialShoot = true;
 let isShooting = false;
 let specialShooting = false;
 let animationFrameId;
@@ -91,7 +92,8 @@ function createGrid() {
 function startGame() {
     const squares = Array.from(document.querySelectorAll(".grid div"));
 
-    let alienInvaders = [
+    // Initialize alien invaders globally
+    alienInvaders = [
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
         40, 41, 42, 43, 44, 45, 46, 47, 48, 49
@@ -343,6 +345,7 @@ function startGame() {
     startInvaderShooting();
 }
 
+// Function to handle game over
 function gameOver(message, isWin) {
     gameOverMessage.innerHTML = message;
     gameOverOverlay.style.display = "block";
@@ -354,13 +357,20 @@ function gameOver(message, isWin) {
     document.removeEventListener('keydown', specialShoot);
 }
 
+// Function to start invader shooting with random intervals
 function startInvaderShooting() {
-    invaderLaserIntervals.push(setInterval(invaderShoot, 1000 + Math.random() * 2000));
+    invaderLaserIntervals.push(setInterval(() => {
+        invaderShoot();
+    }, 1000 + Math.random() * 2000)); // Randomized shooting intervals
 }
 
+// Function to handle invader shooting
 function invaderShoot() {
+    const squares = Array.from(document.querySelectorAll(".grid div"));
+
     let randomInvaderIndex = alienInvaders[Math.floor(Math.random() * alienInvaders.length)];
 
+    // Ensure the invader is not removed before it shoots
     if (!aliensRemoved.includes(alienInvaders.indexOf(randomInvaderIndex))) {
         let laserId;
         let currentLaserIndex = randomInvaderIndex;
@@ -369,16 +379,18 @@ function invaderShoot() {
             if (isPaused) return;
 
             squares[currentLaserIndex].classList.remove("invader-laser");
-            currentLaserIndex += width;
+            currentLaserIndex += width; // Move the laser one row down
 
             if (currentLaserIndex < width * width) {
                 squares[currentLaserIndex].classList.add("invader-laser");
 
+                // Check if the laser hits the shooter
                 if (currentLaserIndex === currentShooterIndex) {
                     squares[currentLaserIndex].classList.remove("invader-laser");
                     playerLives--;
                     updateLivesDisplay();
 
+                    // End the game if lives are exhausted
                     if (playerLives === 0) {
                         gameOver('GAME OVER - You were hit 3 times!', false);
                     }
@@ -388,6 +400,7 @@ function invaderShoot() {
                     laserId = requestAnimationFrame(moveLaserDown);
                 }
             } else {
+                // Remove the laser when it goes out of bounds
                 squares[currentLaserIndex].classList.remove("invader-laser");
                 cancelAnimationFrame(laserId);
             }
