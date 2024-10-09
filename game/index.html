@@ -1,175 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset='utf-8'>
-  <title>Space Invaders</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: black;
-      color: white;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
-
-    .grid {
-      width: 400px;
-      height: 400px;
-      display: grid;
-      grid-template-columns: repeat(20, 1fr);
-      grid-template-rows: repeat(20, 1fr);
-      margin: 20px;
-      position: relative;
-    }
-
-    .grid div {
-      width: 20px;
-      height: 20px;
-      border: 1px solid #222;
-    }
-
-    .results {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    .countdown {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-
-    .pause-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 50px;
-      font-weight: bold;
-      color: white;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 20px;
-      border-radius: 10px;
-      z-index: 10;
-      display: none;
-      text-align: center;
-    }
-
-    .pause-buttons {
-      margin-top: 20px;
-    }
-
-    .pause-buttons button {
-      font-size: 18px;
-      padding: 10px 20px;
-      margin: 10px;
-      background-color: #444;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .pause-buttons button:hover {
-      background-color: #666;
-    }
-
-    .laser {
-      background-color: red;
-    }
-
-    .invader-laser {
-      background-color: yellow;
-    }
-
-    .control-panel {
-      margin-left: 20px;
-      padding: 20px;
-      border: 1px solid #444;
-      border-radius: 10px;
-      background-color: #333;
-      color: white;
-      width: 200px;
-      text-align: left;
-      position: relative;
-    }
-
-    .control-panel h3 {
-      margin-top: 0;
-    }
-
-    .control-panel ul {
-      list-style-type: none;
-      padding-left: 0;
-    }
-
-    .control-panel ul li {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-
-    .start-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 30px;
-      font-weight: bold;
-      color: white;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 20px;
-      border-radius: 10px;
-      z-index: 10;
-      text-align: center;
-    }
-  </style>
+    <meta charset='utf-8'>
+    <title>Space Invaders</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .grid {
+            width: 400px;
+            height: 400px;
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            grid-template-rows: repeat(20, 1fr);
+            margin: 20px;
+            position: relative;
+        }
+        
+        .grid div {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #222;
+        }
+        
+        .results {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .countdown {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .pause-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            display: none;
+            text-align: center;
+        }
+        
+        .pause-buttons {
+            margin-top: 20px;
+        }
+        
+        .pause-buttons button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .pause-buttons button:hover {
+            background-color: #666;
+        }
+        
+        .laser {
+            background-color: red;
+        }
+        
+        .invader-laser {
+            background-color: yellow;
+        }
+        
+        .control-panel {
+            margin-left: 20px;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background-color: #333;
+            color: white;
+            width: 200px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .control-panel h3 {
+            margin-top: 0;
+        }
+        
+        .control-panel ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .control-panel ul li {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .start-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
-  <div>
-    <h1 class="results">Score: 0</h1>
-    <h2 class="countdown">Time Left: 45s</h2>
-    <div class="grid"></div>
+    <div>
+        <h1 class="results">Score: 0</h1>
+        <h2 class="countdown">Time Left: 45s</h2>
+        <div class="grid"></div>
 
-    <!-- Start game overlay -->
-    <div id="start-game-overlay" class="start-overlay">
-      <div id="start-game-message">Press Start to Play!</div>
-      <div class="pause-buttons">
-        <button id="start-game-btn">Start Game</button>
-      </div>
+        <!-- Start game overlay -->
+        <div id="start-game-overlay" class="start-overlay" style="display: block;">
+            <div id="start-game-message">Press Start to Play!</div>
+            <div class="pause-buttons">
+                <button id="start-game-btn">Start Game</button>
+            </div>
+        </div>
+
+        <!-- Pause game overlay -->
+        <div class="pause-overlay" id="pause-overlay">
+            <div>PAUSED</div>
+            <div class="pause-buttons">
+                <button id="continue-btn">Continue</button>
+                <button id="restart-btn">Restart</button>
+            </div>
+        </div>
+
+        <!-- Game over overlay -->
+        <div id="game-over-overlay" class="pause-overlay" style="display: none;">
+            <div id="game-over-message"></div>
+            <div class="pause-buttons">
+                <button id="final-restart-btn">Restart</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Pause game overlay -->
-    <div class="pause-overlay" id="pause-overlay">
-      <div>PAUSED</div>
-      <div class="pause-buttons">
-        <button id="continue-btn">Continue</button>
-        <button id="restart-btn">Restart</button>
-      </div>
+    <!-- Control Panel for Game Controls -->
+    <div class="control-panel">
+        <h3>Controls</h3>
+        <ul>
+            <li><strong>Right Key:</strong> Move Right</li>
+            <li><strong>Left Key:</strong> Move Left</li>
+            <li><strong>Up Key:</strong> Shoot Laser</li>
+            <li><strong>Down Key:</strong> Special Move (use it wisely)</li>
+        </ul>
     </div>
 
-    <!-- Game over overlay -->
-    <div id="game-over-overlay" class="pause-overlay" style="display: none;">
-      <div id="game-over-message"></div>
-      <div class="pause-buttons">
-        <button id="final-restart-btn">Restart</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Control Panel for Game Controls -->
-  <div class="control-panel">
-    <h3>Controls</h3>
-    <ul>
-      <li><strong>Right Key:</strong> Move Right</li>
-      <li><strong>Left Key:</strong> Move Left</li>
-      <li><strong>Up Key:</strong> Shoot Laser</li>
-      <li><strong>Down Key:</strong> Special Move (use it wisely)</li>
-    </ul>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>

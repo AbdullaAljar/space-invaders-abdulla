@@ -1,32 +1,40 @@
 .grid {
-  display: grid;
-  grid-template-columns: repeat(20, 30px); /* Adjust the number of columns and size */
-  grid-template-rows: repeat(20, 30px); /* Adjust the number of rows and size */
-  gap: 2px; /* Optional: Add some space between grid items */
-  width: fit-content; /* Ensure the grid fits its content */
-  margin: 0 auto; /* Center the grid */
-  background-color: black; /* Background color for the grid */
+    display: grid;
+    grid-template-columns: repeat(20, 30px);
+    /* Adjust the number of columns and size */
+    grid-template-rows: repeat(20, 30px);
+    /* Adjust the number of rows and size */
+    gap: 2px;
+    /* Optional: Add some space between grid items */
+    width: fit-content;
+    /* Ensure the grid fits its content */
+    margin: 0 auto;
+    /* Center the grid */
+    background-color: black;
+    /* Background color for the grid */
 }
 
 .grid div {
-  width: 30px; /* Adjust the size of each grid item */
-  height: 30px; /* Adjust the size of each grid item */
+    width: 30px;
+    /* Adjust the size of each grid item */
+    height: 30px;
+    /* Adjust the size of each grid item */
 }
 
 .invader {
-  background-size: cover;
-  background-repeat: no-repeat;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .shooter {
-  background-size: cover;
-  background-repeat: no-repeat;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .laser {
-  background-color: rgb(255, 255, 255);
+    background-color: rgb(255, 255, 255);
 }
 
 .boom {
-  background-color: red;
+    background-color: red;
 }
