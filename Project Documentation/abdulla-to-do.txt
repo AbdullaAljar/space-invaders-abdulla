@@ -14,10 +14,6 @@ invader shoots lazer randomly (done)
 
 implement lives mechanic for invader lazer (done)
 
-
-
-issues:
-
 lives do not deduct after getting hit (done)
 
 redundant lives counter that doesnt work (done)
@@ -28,9 +24,18 @@ timer finsihs and no gameover (done)
 
 the laser shoots after gameover (done)
 
-
-
 laser doesnt work (DONE)
+
+
+
+
+
+issues:
+
+
+the invaders dont reach the final row before game over (done)
+
+
 
 shoot and pause freezes laser even after unpausing
 

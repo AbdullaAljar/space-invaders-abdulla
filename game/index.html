@@ -50,11 +50,11 @@
       font-size: 50px;
       font-weight: bold;
       color: white;
-      background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+      background-color: rgba(0, 0, 0, 0.7);
       padding: 20px;
       border-radius: 10px;
-      z-index: 10; /* Ensure it appears on top */
-      display: none; /* Initially hidden */
+      z-index: 10;
+      display: none;
       text-align: center;
     }
 
@@ -78,14 +78,13 @@
     }
 
     .laser {
-      background-color: red; /* Make the laser visible with a red color */
+      background-color: red;
     }
 
     .invader-laser {
-      background-color: yellow; /* Invader's laser */
+      background-color: yellow;
     }
 
-    /* Styling for the control panel */
     .control-panel {
       margin-left: 20px;
       padding: 20px;
@@ -112,6 +111,20 @@
       margin-bottom: 10px;
     }
 
+    .start-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 10;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -119,13 +132,25 @@
     <h1 class="results">Score: 0</h1>
     <h2 class="countdown">Time Left: 45s</h2>
     <div class="grid"></div>
-    <div class="pause-overlay">
-      PAUSED
+
+    <!-- Start game overlay -->
+    <div id="start-game-overlay" class="start-overlay">
+      <div id="start-game-message">Press Start to Play!</div>
+      <div class="pause-buttons">
+        <button id="start-game-btn">Start Game</button>
+      </div>
+    </div>
+
+    <!-- Pause game overlay -->
+    <div class="pause-overlay" id="pause-overlay">
+      <div>PAUSED</div>
       <div class="pause-buttons">
         <button id="continue-btn">Continue</button>
         <button id="restart-btn">Restart</button>
       </div>
-    </div> <!-- The pause message with buttons -->
+    </div>
+
+    <!-- Game over overlay -->
     <div id="game-over-overlay" class="pause-overlay" style="display: none;">
       <div id="game-over-message"></div>
       <div class="pause-buttons">
